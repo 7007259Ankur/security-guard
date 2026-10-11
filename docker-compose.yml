@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: security-guard-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: security_guard
+      POSTGRES_USER: security_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "5435:5432"
+    volumes:
+      - security_guard_data:/var/lib/postgresql/data
+
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U security_user -d security_guard
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  security_guard_data:
